@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import QEvent, QObject, QRect, Qt, Signal
-from PySide6.QtGui import QDragEnterEvent, QDropEvent
+from PySide6.QtCore import Qt, QRect, QSize, Signal
+from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QFont, QPainter
 from PySide6.QtWidgets import (
     QAbstractItemView,
-    QApplication,
     QCheckBox,
     QComboBox,
     QFrame,
@@ -17,6 +16,8 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QSizePolicy,
+    QStyle,
+    QStyledItemDelegate,
     QVBoxLayout,
     QWidget,
 )
@@ -25,69 +26,105 @@ from ..models.paper import Paper
 from ..services.paper_service import PaperService
 
 
-class PaperListItemWidget(QWidget):
-    """Rich list item showing author・year, title, journal."""
+class PaperItemDelegate(QStyledItemDelegate):
+    """Delegate that paints rich paper list items without using child widgets."""
 
-    def __init__(self, paper: Paper, parent=None):
-        super().__init__(parent)
-        self.paper = paper
-        self._build()
+    def paint(self, painter: QPainter, option, index):
+        paper: Optional[Paper] = index.data(Qt.ItemDataRole.UserRole)
+        if not paper:
+            super().paint(painter, option, index)
+            return
 
-    def _build(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 6, 8, 6)
-        layout.setSpacing(2)
+        painter.save()
 
-        authors = self.paper.author_list
+        is_selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        if is_selected:
+            painter.fillRect(option.rect, QColor("#eff6ff"))
+            accent = QRect(option.rect.left(), option.rect.top(), 3, option.rect.height())
+            painter.fillRect(accent, QColor("#3b82f6"))
+        elif index.row() % 2 == 0:
+            painter.fillRect(option.rect, QColor("#f8fafc"))
+        else:
+            painter.fillRect(option.rect, QColor("#ffffff"))
+
+        left = option.rect.left() + 10
+        top = option.rect.top() + 6
+        right = option.rect.right() - 8
+        width = right - left
+
+        # ── Meta line (author + year) ───────────────────────────────────────
+        authors = paper.author_list
         author_str = authors[0] if authors else ""
         if len(authors) == 2:
             author_str = f"{authors[0]}・{authors[1]}"
         elif len(authors) > 2:
             author_str = f"{authors[0]} ら"
-        year_str = f"（{self.paper.year}）" if self.paper.year else ""
+        year_str = f"（{paper.year}）" if paper.year else ""
+        meta_text = f"{author_str}{year_str}"
 
-        if self.paper.is_favorite:
-            fav_mark = ' <span style="color: #f59e0b;">★</span>'
-        else:
-            fav_mark = ""
+        font_small = QFont(option.font)
+        font_small.setPointSize(max(font_small.pointSize() - 2, 8))
+        painter.setFont(font_small)
+        painter.setPen(QColor("#6b7280"))
+        meta_w = width - (20 if paper.is_favorite else 0)
+        painter.drawText(QRect(left, top, meta_w, 16),
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                         meta_text)
 
-        meta_label = QLabel(f"{author_str}{year_str}{fav_mark}")
-        meta_label.setTextFormat(Qt.TextFormat.RichText)
-        meta_label.setStyleSheet("color: #888; font-size: 11px;")
-        layout.addWidget(meta_label)
+        if paper.is_favorite:
+            painter.setPen(QColor("#f59e0b"))
+            painter.drawText(QRect(right - 18, top, 18, 16),
+                             Qt.AlignmentFlag.AlignCenter, "★")
 
-        title_label = QLabel(self.paper.title or "（タイトル未設定）")
-        title_label.setWordWrap(True)
-        title_label.setStyleSheet("font-weight: bold; font-size: 13px;")
-        layout.addWidget(title_label)
+        top += 18
 
-        if self.paper.journal:
-            journal_label = QLabel(self.paper.journal)
-            journal_label.setStyleSheet("color: #666; font-size: 11px; font-style: italic;")
-            journal_label.setWordWrap(True)
-            layout.addWidget(journal_label)
+        # ── Title ──────────────────────────────────────────────────────────
+        font_title = QFont(option.font)
+        font_title.setBold(True)
+        painter.setFont(font_title)
+        painter.setPen(QColor("#111827") if not is_selected else QColor("#1e3a8a"))
+        fm = painter.fontMetrics()
+        title_text = fm.elidedText(
+            paper.title or "（タイトル未設定）",
+            Qt.TextElideMode.ElideRight, width
+        )
+        painter.drawText(QRect(left, top, width, 18),
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                         title_text)
+        top += 18
 
-        if self.paper.tag_list:
-            tag_row = QHBoxLayout()
-            tag_row.setSpacing(4)
-            for tag in self.paper.tag_list[:4]:
-                badge = QLabel(tag)
-                badge.setStyleSheet(
-                    "background: #e0e7ff; color: #3730a3; border-radius: 3px; "
-                    "padding: 1px 5px; font-size: 10px;"
-                )
-                tag_row.addWidget(badge)
-            tag_row.addStretch()
-            layout.addLayout(tag_row)
+        # ── Journal ────────────────────────────────────────────────────────
+        if paper.journal:
+            font_journal = QFont(option.font)
+            font_journal.setPointSize(max(font_journal.pointSize() - 2, 8))
+            font_journal.setItalic(True)
+            painter.setFont(font_journal)
+            painter.setPen(QColor("#6b7280"))
+            fm2 = painter.fontMetrics()
+            jtext = fm2.elidedText(paper.journal, Qt.TextElideMode.ElideRight, width)
+            painter.drawText(QRect(left, top, width, 16),
+                             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                             jtext)
+
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        paper: Optional[Paper] = index.data(Qt.ItemDataRole.UserRole)
+        if not paper:
+            return super().sizeHint(option, index)
+        h = 6 + 16 + 18 + 6   # top + meta + title + bottom
+        if paper.journal:
+            h += 16
+        return QSize(100, h)
 
 
 class PaperListView(QWidget):
-    paper_selected = Signal(object)   # Paper | None
+    paper_selected = Signal(object)
     add_requested = Signal()
-    edit_requested = Signal(object)   # Paper
-    delete_requested = Signal(object)  # Paper
+    edit_requested = Signal(object)
+    delete_requested = Signal(object)
     import_ris_requested = Signal()
-    pdf_dropped = Signal(str)          # file path
+    pdf_dropped = Signal(str)
 
     def __init__(self, service: PaperService, parent=None):
         super().__init__(parent)
@@ -97,22 +134,6 @@ class PaperListView(QWidget):
         self.setAcceptDrops(True)
         self._build()
         self.refresh()
-        QApplication.instance().installEventFilter(self)
-
-    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
-        if event.type() == QEvent.Type.MouseButtonPress:
-            viewport = self._list.viewport()
-            vp_rect = QRect(viewport.mapToGlobal(viewport.rect().topLeft()), viewport.rect().size())
-            try:
-                global_pos = watched.mapToGlobal(event.position().toPoint())
-            except Exception:
-                return super().eventFilter(watched, event)
-            if vp_rect.contains(global_pos):
-                local_pos = viewport.mapFromGlobal(global_pos)
-                item = self._list.itemAt(local_pos)
-                if item:
-                    self._list.setCurrentItem(item)
-        return super().eventFilter(watched, event)
 
     def _build(self):
         root = QVBoxLayout(self)
@@ -208,13 +229,13 @@ class PaperListView(QWidget):
 
         # ── Paper list ─────────────────────────────────────────────────────────
         self._list = QListWidget()
-        self._list.setAlternatingRowColors(True)
+        self._list.setItemDelegate(PaperItemDelegate(self._list))
+        self._list.setAlternatingRowColors(False)
         self._list.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self._list.itemSelectionChanged.connect(self._on_selection_changed)
         self._list.setSpacing(1)
         root.addWidget(self._list)
 
-        # Drop hint
         self._drop_label = QLabel("PDFをここにドラッグ")
         self._drop_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._drop_label.setStyleSheet("color: #aaa; font-size: 11px; padding: 4px;")
@@ -294,10 +315,6 @@ class PaperListView(QWidget):
         for paper in self._papers:
             item = QListWidgetItem(self._list)
             item.setData(Qt.ItemDataRole.UserRole, paper)
-            widget = PaperListItemWidget(paper)
-            item.setSizeHint(widget.sizeHint())
-            self._list.addItem(item)
-            self._list.setItemWidget(item, widget)
 
         self._count_label.setText(f"{len(self._papers)} 件")
 
