@@ -32,7 +32,7 @@ class CitationView(QWidget):
 
         self._empty_label = QLabel("論文を選択すると引用形式（J-APA）が表示されます")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._empty_label.setStyleSheet("color: #9ca3af; font-size: 13px; margin: 40px;")
+        self._empty_label.setStyleSheet("color: #4b5263; font-size: 13px; margin: 40px;")
         root.addWidget(self._empty_label)
 
         self._content = QWidget()
@@ -69,8 +69,8 @@ class CitationView(QWidget):
     def _section_header(self, text: str) -> QLabel:
         lbl = QLabel(text)
         lbl.setStyleSheet(
-            "font-size: 11px; font-weight: bold; color: #6b7280; "
-            "border-bottom: 1px solid #e5e7eb; padding-bottom: 2px;"
+            "font-size: 11px; font-weight: bold; color: #81a2be; "
+            "border-bottom: 1px solid #373b41; padding-bottom: 2px;"
         )
         return lbl
 
@@ -80,7 +80,8 @@ class CitationView(QWidget):
         box.setFixedHeight(height)
         box.setStyleSheet(
             "font-family: 'Noto Serif CJK JP', 'IPAMincho', serif; "
-            "font-size: 13px; background: #f9fafb; border: 1px solid #e5e7eb; padding: 4px;"
+            "font-size: 13px; background: #282a2e; color: #c5c8c6;"
+            " border: 1px solid #373b41; padding: 4px;"
         )
         return box
 

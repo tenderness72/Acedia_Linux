@@ -39,13 +39,13 @@ class PaperItemDelegate(QStyledItemDelegate):
 
         is_selected = bool(option.state & QStyle.StateFlag.State_Selected)
         if is_selected:
-            painter.fillRect(option.rect, QColor("#eff6ff"))
+            painter.fillRect(option.rect, QColor("#2a3347"))
             accent = QRect(option.rect.left(), option.rect.top(), 3, option.rect.height())
-            painter.fillRect(accent, QColor("#3b82f6"))
+            painter.fillRect(accent, QColor("#81a2be"))
         elif index.row() % 2 == 0:
-            painter.fillRect(option.rect, QColor("#f8fafc"))
+            painter.fillRect(option.rect, QColor("#1d1f21"))
         else:
-            painter.fillRect(option.rect, QColor("#ffffff"))
+            painter.fillRect(option.rect, QColor("#22242b"))
 
         left = option.rect.left() + 10
         top = option.rect.top() + 6
@@ -65,14 +65,14 @@ class PaperItemDelegate(QStyledItemDelegate):
         font_small = QFont(option.font)
         font_small.setPointSize(max(font_small.pointSize() - 2, 8))
         painter.setFont(font_small)
-        painter.setPen(QColor("#6b7280"))
+        painter.setPen(QColor("#969896"))
         meta_w = width - (20 if paper.is_favorite else 0)
         painter.drawText(QRect(left, top, meta_w, 16),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
                          meta_text)
 
         if paper.is_favorite:
-            painter.setPen(QColor("#f59e0b"))
+            painter.setPen(QColor("#f0c674"))
             painter.drawText(QRect(right - 18, top, 18, 16),
                              Qt.AlignmentFlag.AlignCenter, "★")
 
@@ -82,7 +82,7 @@ class PaperItemDelegate(QStyledItemDelegate):
         font_title = QFont(option.font)
         font_title.setBold(True)
         painter.setFont(font_title)
-        painter.setPen(QColor("#111827") if not is_selected else QColor("#1e3a8a"))
+        painter.setPen(QColor("#c5c8c6") if not is_selected else QColor("#81a2be"))
         fm = painter.fontMetrics()
         title_text = fm.elidedText(
             paper.title or "（タイトル未設定）",
@@ -99,7 +99,7 @@ class PaperItemDelegate(QStyledItemDelegate):
             font_journal.setPointSize(max(font_journal.pointSize() - 2, 8))
             font_journal.setItalic(True)
             painter.setFont(font_journal)
-            painter.setPen(QColor("#6b7280"))
+            painter.setPen(QColor("#969896"))
             fm2 = painter.fontMetrics()
             jtext = fm2.elidedText(paper.journal, Qt.TextElideMode.ElideRight, width)
             painter.drawText(QRect(left, top, width, 16),

@@ -32,8 +32,8 @@ class _SectionLabel(QLabel):
     def __init__(self, text: str):
         super().__init__(text)
         self.setStyleSheet(
-            "font-size: 11px; font-weight: bold; color: #6b7280; "
-            "border-bottom: 1px solid #e5e7eb; padding-bottom: 2px;"
+            "font-size: 11px; font-weight: bold; color: #81a2be; "
+            "border-bottom: 1px solid #373b41; padding-bottom: 2px;"
         )
 
 
@@ -42,7 +42,7 @@ class _FieldValue(QLabel):
         super().__init__(text)
         self.setWordWrap(True)
         self.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.setStyleSheet("font-size: 13px; color: #111827; padding: 2px 0;")
+        self.setStyleSheet("font-size: 13px; color: #c5c8c6; padding: 2px 0;")
 
 
 class _LinkLabel(QLabel):
@@ -79,7 +79,7 @@ class PaperDetailView(QWidget):
 
         self._empty_label = QLabel("論文を選択してください")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._empty_label.setStyleSheet("color: #9ca3af; font-size: 14px; margin: 40px;")
+        self._empty_label.setStyleSheet("color: #4b5263; font-size: 14px; margin: 40px;")
         self._form.addWidget(self._empty_label)
 
         self._content = QWidget()
@@ -111,14 +111,14 @@ class PaperDetailView(QWidget):
         header_row.setSpacing(6)
 
         btn_style_fav = (
-            "QPushButton { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d;"
-            " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
-            "QPushButton:hover { background: #fde68a; }"
+            "QPushButton { background: #2d2a13; color: #f0c674; border: 1px solid #f0c674;"
+            " border-radius: 4px; padding: 4px 10px; font-size: 13px; font-weight: bold; }"
+            "QPushButton:hover { background: #3a3518; }"
         )
         btn_style_fav_off = (
-            "QPushButton { background: #f1f5f9; color: #9ca3af; border: 1px solid #e2e8f0;"
-            " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
-            "QPushButton:hover { background: #e2e8f0; }"
+            "QPushButton { background: #282a2e; color: #4b5263; border: 1px solid #373b41;"
+            " border-radius: 4px; padding: 4px 10px; font-size: 13px; font-weight: normal; }"
+            "QPushButton:hover { background: #373b41; color: #969896; }"
         )
         fav_btn = QPushButton("★ お気に入り" if paper.is_favorite else "☆ お気に入り")
         fav_btn.setFixedHeight(28)
@@ -128,9 +128,9 @@ class PaperDetailView(QWidget):
         edit_btn = QPushButton("編集")
         edit_btn.setFixedHeight(28)
         edit_btn.setStyleSheet(
-            "QPushButton { background: white; color: #1e40af; border: 1px solid #93c5fd;"
-            " border-radius: 4px; padding: 4px 14px; font-size: 13px; }"
-            "QPushButton:hover { background: #eff6ff; }"
+            "QPushButton { background: #282a2e; color: #81a2be; border: 1px solid #81a2be;"
+            " border-radius: 4px; padding: 4px 14px; font-size: 13px; font-weight: normal; }"
+            "QPushButton:hover { background: #2a3347; }"
         )
         edit_btn.clicked.connect(lambda: self.edit_requested.emit(paper))
 
@@ -140,9 +140,9 @@ class PaperDetailView(QWidget):
             open_btn_top = QPushButton("PDF を開く")
             open_btn_top.setFixedHeight(28)
             open_btn_top.setStyleSheet(
-                "QPushButton { background: #f1f5f9; color: #374151; border: 1px solid #d1d5db;"
-                " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
-                "QPushButton:hover { background: #e2e8f0; }"
+                "QPushButton { background: #282a2e; color: #b5bd68; border: 1px solid #b5bd68;"
+                " border-radius: 4px; padding: 4px 10px; font-size: 13px; font-weight: normal; }"
+                "QPushButton:hover { background: #1e2a1e; }"
             )
             open_btn_top.clicked.connect(lambda: self._open_file(paper.file_path))
             header_row.addWidget(open_btn_top)
@@ -153,7 +153,7 @@ class PaperDetailView(QWidget):
         title_label = QLabel(paper.title or "（タイトル未設定）")
         title_label.setWordWrap(True)
         title_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        title_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #111827; margin: 4px 0 8px;")
+        title_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #c5c8c6; margin: 4px 0 8px;")
         layout.addWidget(title_label)
 
         # ── Bibliographic info ────────────────────────────────────────────────
@@ -181,7 +181,7 @@ class PaperDetailView(QWidget):
         if paper.doi:
             doi_row = QHBoxLayout()
             doi_lbl = QLabel("DOI：")
-            doi_lbl.setStyleSheet("color: #6b7280; font-size: 12px; min-width: 80px;")
+            doi_lbl.setStyleSheet("color: #969896; font-size: 12px; min-width: 80px;")
             doi_lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
             doi_link = _LinkLabel(paper.doi_url, paper.doi)
             doi_row.addWidget(doi_lbl)
@@ -211,7 +211,7 @@ class PaperDetailView(QWidget):
             abstract_box.setReadOnly(True)
             abstract_box.setPlainText(paper.abstract)
             abstract_box.setMaximumHeight(160)
-            abstract_box.setStyleSheet("font-size: 12px; background: #f9fafb; border: 1px solid #e5e7eb;")
+            abstract_box.setStyleSheet("font-size: 12px; background: #282a2e; color: #c5c8c6; border: 1px solid #373b41;")
             layout.addWidget(abstract_box)
 
         # ── Keywords ─────────────────────────────────────────────────────────
@@ -223,7 +223,7 @@ class PaperDetailView(QWidget):
             layout.addSpacing(4)
             layout.addWidget(_SectionLabel("ファイル"))
             file_label = QLabel(paper.file_path)
-            file_label.setStyleSheet("color: #6b7280; font-size: 11px;")
+            file_label.setStyleSheet("color: #969896; font-size: 11px;")
             file_label.setWordWrap(True)
             layout.addWidget(file_label)
 
@@ -235,7 +235,7 @@ class PaperDetailView(QWidget):
             notes_box.setReadOnly(True)
             notes_box.setPlainText(paper.additional_notes)
             notes_box.setMaximumHeight(120)
-            notes_box.setStyleSheet("font-size: 12px; background: #fffbeb; border: 1px solid #fde68a;")
+            notes_box.setStyleSheet("font-size: 12px; background: #2d2a13; color: #c5c8c6; border: 1px solid #f0c674;")
             layout.addWidget(notes_box)
 
         layout.addStretch()
@@ -251,7 +251,7 @@ class PaperDetailView(QWidget):
     def _add_kv(self, layout: QVBoxLayout, label: str, value: str):
         row = QHBoxLayout()
         lbl = QLabel(f"{label}：")
-        lbl.setStyleSheet("color: #6b7280; font-size: 12px; min-width: 80px;")
+        lbl.setStyleSheet("color: #969896; font-size: 12px; min-width: 80px;")
         lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         val = _FieldValue(value)
         row.addWidget(lbl)

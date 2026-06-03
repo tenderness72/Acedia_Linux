@@ -25,18 +25,18 @@ from ..services.paper_service import PaperService
 from .note_dialog import NoteDialog
 
 _CATEGORY_COLORS = {
-    "問題と目的": "#dbeafe",
-    "方法": "#dcfce7",
-    "結果": "#fef9c3",
-    "考察": "#fce7f3",
-    "その他": "#f3f4f6",
+    "問題と目的": "#1e2a3a",
+    "方法": "#1a2d1e",
+    "結果": "#2d2a13",
+    "考察": "#2d1a2a",
+    "その他": "#282a2e",
 }
 _CATEGORY_TEXT_COLORS = {
-    "問題と目的": "#1d4ed8",
-    "方法": "#15803d",
-    "結果": "#a16207",
-    "考察": "#be185d",
-    "その他": "#374151",
+    "問題と目的": "#81a2be",
+    "方法": "#b5bd68",
+    "結果": "#f0c674",
+    "考察": "#b294bb",
+    "その他": "#969896",
 }
 
 
@@ -59,7 +59,7 @@ class NotesView(QWidget):
         tb.setContentsMargins(8, 6, 8, 6)
 
         paper_label = QLabel("（論文未選択）")
-        paper_label.setStyleSheet("color: #6b7280; font-size: 12px;")
+        paper_label.setStyleSheet("color: #969896; font-size: 12px;")
         self._paper_label = paper_label
 
         self._btn_add = QPushButton("＋ メモ追加")
@@ -107,7 +107,7 @@ class NotesView(QWidget):
         self._content_browser = QTextBrowser()
         self._content_browser.setOpenExternalLinks(True)
         self._content_browser.setStyleSheet(
-            "font-size: 13px; background: #ffffff; border: 1px solid #e5e7eb;"
+            "font-size: 13px; background: #282a2e; color: #c5c8c6; border: 1px solid #373b41;"
         )
         preview_layout.addWidget(self._content_browser)
         splitter.addWidget(preview_container)
