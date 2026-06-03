@@ -77,6 +77,7 @@ QListWidget::item {
 }
 QListWidget::item:selected {
     background: #eff6ff;
+    color: #1e293b;
     border-left: 3px solid #3b82f6;
 }
 QListWidget::item:alternate {
