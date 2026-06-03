@@ -79,14 +79,21 @@ class PaperListItemWidget(QWidget):
             tag_row.addStretch()
             layout.addLayout(tag_row)
 
+        # 子ウィジェットのクリックをすべて親に透過させる
+        for child in self.findChildren(QWidget):
+            child.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+
     def mousePressEvent(self, event: QMouseEvent):
-        viewport = self.parent()
-        list_widget = viewport.parent() if viewport else None
-        if list_widget:
-            pos = self.mapTo(viewport, event.position().toPoint())
-            item = list_widget.itemAt(pos)
-            if item:
-                list_widget.setCurrentItem(item)
+        # 自身に対応する QListWidgetItem を探して選択する
+        parent = self.parent()
+        while parent and not isinstance(parent, QListWidget):
+            parent = parent.parent()
+        if isinstance(parent, QListWidget):
+            for i in range(parent.count()):
+                item = parent.item(i)
+                if parent.itemWidget(item) is self:
+                    parent.setCurrentItem(item)
+                    break
         super().mousePressEvent(event)
 
 
