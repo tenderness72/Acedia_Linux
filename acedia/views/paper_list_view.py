@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QPalette
+from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPalette
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -33,7 +33,6 @@ class PaperListItemWidget(QWidget):
         self._build()
 
     def _build(self):
-        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 6, 8, 6)
         layout.setSpacing(2)
@@ -45,9 +44,14 @@ class PaperListItemWidget(QWidget):
         elif len(authors) > 2:
             author_str = f"{authors[0]} ら"
         year_str = f"（{self.paper.year}）" if self.paper.year else ""
-        fav_mark = " ★" if self.paper.is_favorite else ""
+
+        if self.paper.is_favorite:
+            fav_mark = ' <span style="color: #f59e0b;">★</span>'
+        else:
+            fav_mark = ""
 
         meta_label = QLabel(f"{author_str}{year_str}{fav_mark}")
+        meta_label.setTextFormat(Qt.TextFormat.RichText)
         meta_label.setStyleSheet("color: #888; font-size: 11px;")
         layout.addWidget(meta_label)
 
@@ -74,6 +78,16 @@ class PaperListItemWidget(QWidget):
                 tag_row.addWidget(badge)
             tag_row.addStretch()
             layout.addLayout(tag_row)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        viewport = self.parent()
+        list_widget = viewport.parent() if viewport else None
+        if list_widget:
+            pos = self.mapTo(viewport, event.position().toPoint())
+            item = list_widget.itemAt(pos)
+            if item:
+                list_widget.setCurrentItem(item)
+        super().mousePressEvent(event)
 
 
 class PaperListView(QWidget):
