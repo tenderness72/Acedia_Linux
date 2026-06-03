@@ -33,6 +33,7 @@ class PaperListItemWidget(QWidget):
         self._build()
 
     def _build(self):
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 6, 8, 6)
         layout.setSpacing(2)
