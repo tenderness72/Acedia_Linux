@@ -232,6 +232,9 @@ class PaperListView(QWidget):
         self._list.setItemDelegate(PaperItemDelegate(self._list))
         self._list.setAlternatingRowColors(False)
         self._list.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self._list.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self._list.itemClicked.connect(self._set_selected_from_item)
+        self._list.currentItemChanged.connect(lambda current, _previous: self._set_selected_from_item(current))
         self._list.itemSelectionChanged.connect(self._on_selection_changed)
         self._list.setSpacing(1)
         root.addWidget(self._list)
@@ -253,6 +256,9 @@ class PaperListView(QWidget):
             p = item.data(Qt.ItemDataRole.UserRole)
             if p and p.id == paper_id:
                 self._list.setCurrentItem(item)
+                item.setSelected(True)
+                self._set_selected_from_item(item)
+                self._list.scrollToItem(item)
                 return
 
     def current_paper(self) -> Optional[Paper]:
@@ -315,6 +321,7 @@ class PaperListView(QWidget):
         for paper in self._papers:
             item = QListWidgetItem(self._list)
             item.setData(Qt.ItemDataRole.UserRole, paper)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 
         self._count_label.setText(f"{len(self._papers)} 件")
 
@@ -326,7 +333,13 @@ class PaperListView(QWidget):
     def _on_selection_changed(self):
         items = self._list.selectedItems()
         if items:
-            self._selected = items[0].data(Qt.ItemDataRole.UserRole)
+            self._set_selected_from_item(items[0])
+        else:
+            self._set_selected_from_item(self._list.currentItem())
+
+    def _set_selected_from_item(self, item: Optional[QListWidgetItem]):
+        if item is not None:
+            self._selected = item.data(Qt.ItemDataRole.UserRole)
         else:
             self._selected = None
 
