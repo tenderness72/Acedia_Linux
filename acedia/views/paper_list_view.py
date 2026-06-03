@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPalette
+from PySide6.QtCore import QEvent, QObject, QRect, Qt, Signal
+from PySide6.QtGui import QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QCheckBox,
     QComboBox,
     QFrame,
@@ -79,23 +80,6 @@ class PaperListItemWidget(QWidget):
             tag_row.addStretch()
             layout.addLayout(tag_row)
 
-        # 子ウィジェットのクリックをすべて親に透過させる
-        for child in self.findChildren(QWidget):
-            child.setAttribute(Qt.WA_TransparentForMouseEvents, True)
-
-    def mousePressEvent(self, event: QMouseEvent):
-        # 自身に対応する QListWidgetItem を探して選択する
-        parent = self.parent()
-        while parent and not isinstance(parent, QListWidget):
-            parent = parent.parent()
-        if isinstance(parent, QListWidget):
-            for i in range(parent.count()):
-                item = parent.item(i)
-                if parent.itemWidget(item) is self:
-                    parent.setCurrentItem(item)
-                    break
-        super().mousePressEvent(event)
-
 
 class PaperListView(QWidget):
     paper_selected = Signal(object)   # Paper | None
@@ -113,6 +97,22 @@ class PaperListView(QWidget):
         self.setAcceptDrops(True)
         self._build()
         self.refresh()
+        QApplication.instance().installEventFilter(self)
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.MouseButtonPress:
+            viewport = self._list.viewport()
+            vp_rect = QRect(viewport.mapToGlobal(viewport.rect().topLeft()), viewport.rect().size())
+            try:
+                global_pos = watched.mapToGlobal(event.position().toPoint())
+            except Exception:
+                return super().eventFilter(watched, event)
+            if vp_rect.contains(global_pos):
+                local_pos = viewport.mapFromGlobal(global_pos)
+                item = self._list.itemAt(local_pos)
+                if item:
+                    self._list.setCurrentItem(item)
+        return super().eventFilter(watched, event)
 
     def _build(self):
         root = QVBoxLayout(self)
