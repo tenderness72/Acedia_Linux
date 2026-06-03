@@ -78,12 +78,12 @@ class PaperEditDialog(QDialog):
         layout.addLayout(doi_row)
 
         self._status_label = QLabel("")
-        self._status_label.setStyleSheet("color: #6b7280; font-size: 11px;")
+        self._status_label.setStyleSheet("color: #969896; font-size: 11px;")
         layout.addWidget(self._status_label)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #e5e7eb;")
+        sep.setStyleSheet("color: #373b41;")
         layout.addWidget(sep)
 
         # ── Main form ─────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ class PaperEditDialog(QDialog):
         self._file_edit = QLineEdit()
         self._file_edit.setPlaceholderText("ファイルパス")
         self._file_edit.setReadOnly(True)
-        self._file_edit.setStyleSheet("background: #f9fafb;")
+        self._file_edit.setStyleSheet("background: #282a2e; color: #969896;")
         browse_btn = QPushButton("参照…")
         browse_btn.setFixedWidth(60)
         browse_btn.clicked.connect(self._browse_file)
@@ -191,7 +191,7 @@ class PaperEditDialog(QDialog):
         self._drop_label = QLabel("または PDF をここにドロップ")
         self._drop_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._drop_label.setStyleSheet(
-            "border: 2px dashed #d1d5db; color: #9ca3af; padding: 12px; border-radius: 4px;"
+            "border: 2px dashed #4b5263; color: #4b5263; padding: 12px; border-radius: 4px;"
         )
         layout.addWidget(self._drop_label)
 
