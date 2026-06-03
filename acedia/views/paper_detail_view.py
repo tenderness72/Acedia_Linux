@@ -106,14 +106,21 @@ class PaperDetailView(QWidget):
 
         # ── Header ──────────────────────────────────────────────────────────────
         header_row = QHBoxLayout()
+        header_row.setSpacing(6)
 
-        fav_btn = QPushButton("★" if paper.is_favorite else "☆")
-        fav_btn.setFixedSize(32, 32)
-        fav_btn.setStyleSheet(
-            "color: #f59e0b; font-size: 18px; border: none; background: transparent;"
-            if paper.is_favorite
-            else "color: #d1d5db; font-size: 18px; border: none; background: transparent;"
+        btn_style_fav = (
+            "QPushButton { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d;"
+            " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
+            "QPushButton:hover { background: #fde68a; }"
         )
+        btn_style_fav_off = (
+            "QPushButton { background: #f1f5f9; color: #9ca3af; border: 1px solid #e2e8f0;"
+            " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
+            "QPushButton:hover { background: #e2e8f0; }"
+        )
+        fav_btn = QPushButton("★ お気に入り" if paper.is_favorite else "☆ お気に入り")
+        fav_btn.setFixedHeight(28)
+        fav_btn.setStyleSheet(btn_style_fav if paper.is_favorite else btn_style_fav_off)
         fav_btn.clicked.connect(lambda: self.favorite_toggled.emit(paper.id))
 
         edit_btn = QPushButton("編集")
@@ -126,8 +133,18 @@ class PaperDetailView(QWidget):
         edit_btn.clicked.connect(lambda: self.edit_requested.emit(paper))
 
         header_row.addWidget(fav_btn)
-        header_row.addStretch()
         header_row.addWidget(edit_btn)
+        if paper.file_path:
+            open_btn_top = QPushButton("PDF を開く")
+            open_btn_top.setFixedHeight(28)
+            open_btn_top.setStyleSheet(
+                "QPushButton { background: #f1f5f9; color: #374151; border: 1px solid #d1d5db;"
+                " border-radius: 4px; padding: 4px 10px; font-size: 13px; }"
+                "QPushButton:hover { background: #e2e8f0; }"
+            )
+            open_btn_top.clicked.connect(lambda: self._open_file(paper.file_path))
+            header_row.addWidget(open_btn_top)
+        header_row.addStretch()
         layout.addLayout(header_row)
 
         # ── Title ────────────────────────────────────────────────────────────────
@@ -217,22 +234,10 @@ class PaperDetailView(QWidget):
         if paper.file_path:
             layout.addSpacing(4)
             layout.addWidget(_SectionLabel("ファイル"))
-            file_row = QHBoxLayout()
             file_label = QLabel(paper.file_path)
             file_label.setStyleSheet("color: #6b7280; font-size: 11px;")
             file_label.setWordWrap(True)
-            open_btn = QPushButton("開く")
-            open_btn.setFixedHeight(24)
-            open_btn.setFixedWidth(50)
-            open_btn.setStyleSheet(
-                "QPushButton { background: #f1f5f9; color: #374151; border: 1px solid #d1d5db;"
-                " border-radius: 4px; font-size: 12px; }"
-                "QPushButton:hover { background: #e2e8f0; }"
-            )
-            open_btn.clicked.connect(lambda: self._open_file(paper.file_path))
-            file_row.addWidget(file_label, 1)
-            file_row.addWidget(open_btn)
-            layout.addLayout(file_row)
+            layout.addWidget(file_label)
 
         # ── Additional notes ──────────────────────────────────────────────────
         if paper.additional_notes:
