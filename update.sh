@@ -10,4 +10,6 @@ cp $SRC/acedia/views/notes_view.py $BASE/acedia/views/notes_view.py
 cp $SRC/acedia/views/citation_view.py $BASE/acedia/views/citation_view.py
 cp $SRC/acedia/services/paper_service.py $BASE/acedia/services/paper_service.py
 cp $SRC/acedia/services/ris_service.py $BASE/acedia/services/ris_service.py
+mkdir -p $BASE/acedia/resources
+cp $SRC/acedia/resources/icon.ico $BASE/acedia/resources/icon.ico
 echo "完了"

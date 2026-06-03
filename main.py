@@ -3,12 +3,13 @@
 
 import sys
 import os
+from pathlib import Path
 
 # Silence Qt platform warnings on some distros
 os.environ.setdefault("QT_LOGGING_RULES", "*.debug=false;qt.qpa.xcb=false")
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QFont, QPalette, QColor
+from PySide6.QtGui import QFont, QIcon, QPalette, QColor
 from PySide6.QtCore import Qt
 
 from acedia.models import init_db
@@ -179,6 +180,10 @@ def main():
     app.setFont(font)
 
     app.setStyleSheet(STYLESHEET)
+
+    icon_path = Path(__file__).parent / "acedia" / "resources" / "icon.ico"
+    if icon_path.exists():
+        app.setWindowIcon(QIcon(str(icon_path)))
 
     # Initialize DB
     init_db()
