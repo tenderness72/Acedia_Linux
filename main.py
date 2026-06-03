@@ -16,8 +16,12 @@ from acedia.views import MainWindow
 
 
 STYLESHEET = """
-QMainWindow {
+QMainWindow, QWidget {
     background-color: #f8fafc;
+    color: #111827;
+}
+QScrollArea, QScrollArea > QWidget > QWidget {
+    background-color: white;
 }
 QToolBar {
     background: #1e40af;

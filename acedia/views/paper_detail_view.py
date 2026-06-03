@@ -99,11 +99,8 @@ class PaperDetailView(QWidget):
         if paper is None:
             return
 
-        # clear old content
-        while self._content_layout.count():
-            child = self._content_layout.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
+        # clear old content (widgets AND nested layouts)
+        self._clear_layout(self._content_layout)
 
         layout = self._content_layout
 
@@ -249,6 +246,14 @@ class PaperDetailView(QWidget):
             layout.addWidget(notes_box)
 
         layout.addStretch()
+
+    def _clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self._clear_layout(child.layout())
 
     def _add_kv(self, layout: QVBoxLayout, label: str, value: str):
         row = QHBoxLayout()
