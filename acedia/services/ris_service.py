@@ -48,19 +48,23 @@ class RisImportService:
             if not line:
                 continue
 
-            if line.strip() == "ER":
+            m = re.match(r"^([A-Z][A-Z0-9])\s+-\s*(.*)", line)
+            if m:
+                tag, value = m.group(1), m.group(2).strip()
+                if tag == "ER":
+                    p = self._build_paper(current)
+                    if p.title or p.authors:
+                        papers.append(p)
+                    current = {}
+                    continue
+                field = _TAG_MAP.get(tag)
+                if field:
+                    current.setdefault(field, []).append(value)
+            elif line.strip() == "ER":
                 p = self._build_paper(current)
                 if p.title or p.authors:
                     papers.append(p)
                 current = {}
-                continue
-
-            m = re.match(r"^([A-Z][A-Z0-9])\s+-\s+(.*)", line)
-            if m:
-                tag, value = m.group(1), m.group(2).strip()
-                field = _TAG_MAP.get(tag)
-                if field:
-                    current.setdefault(field, []).append(value)
 
         if current and (current.get("title") or current.get("authors")):
             papers.append(self._build_paper(current))

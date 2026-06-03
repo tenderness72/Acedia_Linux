@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+import re
+
 from sqlalchemy import or_, func
 from sqlalchemy.orm import Session, joinedload
 
@@ -130,7 +132,7 @@ class PaperService:
             rows = s.query(Paper.tags).filter(Paper.tags != "").all()
         tag_set: set[str] = set()
         for (raw,) in rows:
-            for t in raw.split(","):
+            for t in re.split(r"[,，、]+", raw):
                 t = t.strip()
                 if t:
                     tag_set.add(t)

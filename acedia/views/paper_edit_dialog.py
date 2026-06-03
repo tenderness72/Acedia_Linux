@@ -274,6 +274,13 @@ class PaperEditDialog(QDialog):
             self._status_label.setText("メタデータが見つかりませんでした。")
         self._worker = None
 
+    def closeEvent(self, event):
+        if self._worker and self._worker.isRunning():
+            self._worker.finished.disconnect()
+            self._worker.quit()
+            self._worker.wait(2000)
+        super().closeEvent(event)
+
     def _on_save(self):
         if not self._title_edit.text().strip():
             QMessageBox.warning(self, "入力エラー", "タイトルは必須です。")

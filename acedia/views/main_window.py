@@ -96,7 +96,8 @@ class MainWindow(QMainWindow):
         self._update_status()
 
     def _setup_shortcuts(self):
-        QAction(self).setShortcut(QKeySequence.StandardKey.New)
+        self._act_add.setShortcut(QKeySequence.StandardKey.New)
+        self._act_ris.setShortcut(QKeySequence("Ctrl+I"))
 
     # ── Slots ────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,13 @@
 #!/bin/bash
-cp /home/n/Acedia_Linux/main.py /opt/acedia/main.py
-cp /home/n/Acedia_Linux/acedia/views/main_window.py /opt/acedia/acedia/views/main_window.py
-cp /home/n/Acedia_Linux/acedia/views/paper_detail_view.py /opt/acedia/acedia/views/paper_detail_view.py
-cp /home/n/Acedia_Linux/acedia/views/paper_list_view.py /opt/acedia/acedia/views/paper_list_view.py
+BASE=/opt/acedia
+SRC=/home/n/Acedia_Linux
+cp $SRC/main.py $BASE/main.py
+cp $SRC/acedia/views/main_window.py $BASE/acedia/views/main_window.py
+cp $SRC/acedia/views/paper_detail_view.py $BASE/acedia/views/paper_detail_view.py
+cp $SRC/acedia/views/paper_list_view.py $BASE/acedia/views/paper_list_view.py
+cp $SRC/acedia/views/paper_edit_dialog.py $BASE/acedia/views/paper_edit_dialog.py
+cp $SRC/acedia/views/notes_view.py $BASE/acedia/views/notes_view.py
+cp $SRC/acedia/views/citation_view.py $BASE/acedia/views/citation_view.py
+cp $SRC/acedia/services/paper_service.py $BASE/acedia/services/paper_service.py
+cp $SRC/acedia/services/ris_service.py $BASE/acedia/services/ris_service.py
 echo "完了"

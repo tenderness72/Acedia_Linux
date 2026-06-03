@@ -6,16 +6,18 @@ from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QDesktopServices
+from pathlib import Path
+
 from PySide6.QtWidgets import (
     QApplication,
     QFormLayout,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QScrollArea,
     QSizePolicy,
-    QSpacerItem,
     QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -154,20 +156,6 @@ class PaperDetailView(QWidget):
         title_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #111827; margin: 4px 0 8px;")
         layout.addWidget(title_label)
 
-        def add_field(section: str | None, label: str, value: str):
-            if section:
-                layout.addWidget(_SectionLabel(section))
-            if not value:
-                return
-            row = QHBoxLayout()
-            lbl = QLabel(f"{label}：")
-            lbl.setStyleSheet("color: #6b7280; font-size: 12px; min-width: 80px;")
-            lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
-            val = _FieldValue(value)
-            row.addWidget(lbl)
-            row.addWidget(val, 1)
-            layout.addLayout(row)
-
         # ── Bibliographic info ────────────────────────────────────────────────
         layout.addSpacing(4)
         layout.addWidget(_SectionLabel("書誌情報"))
@@ -271,4 +259,7 @@ class PaperDetailView(QWidget):
         layout.addLayout(row)
 
     def _open_file(self, path: str):
+        if not Path(path).exists():
+            QMessageBox.warning(self, "ファイルが見つかりません", f"次のファイルが存在しません：\n{path}")
+            return
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))
