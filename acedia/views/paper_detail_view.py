@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QSizePolicy,
+    QSpacerItem,
     QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -30,7 +31,7 @@ class _SectionLabel(QLabel):
         super().__init__(text)
         self.setStyleSheet(
             "font-size: 11px; font-weight: bold; color: #6b7280; "
-            "border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; margin-top: 8px;"
+            "border-bottom: 1px solid #e5e7eb; padding-bottom: 2px;"
         )
 
 
@@ -83,7 +84,7 @@ class PaperDetailView(QWidget):
         self._content.setVisible(False)
         self._content_layout = QVBoxLayout(self._content)
         self._content_layout.setContentsMargins(0, 0, 0, 0)
-        self._content_layout.setSpacing(2)
+        self._content_layout.setSpacing(6)
         self._form.addWidget(self._content)
         self._form.addStretch()
 
@@ -120,6 +121,11 @@ class PaperDetailView(QWidget):
 
         edit_btn = QPushButton("編集")
         edit_btn.setFixedHeight(28)
+        edit_btn.setStyleSheet(
+            "QPushButton { background: white; color: #1e40af; border: 1px solid #93c5fd;"
+            " border-radius: 4px; padding: 4px 14px; font-size: 13px; }"
+            "QPushButton:hover { background: #eff6ff; }"
+        )
         edit_btn.clicked.connect(lambda: self.edit_requested.emit(paper))
 
         header_row.addWidget(fav_btn)
@@ -149,6 +155,7 @@ class PaperDetailView(QWidget):
             layout.addLayout(row)
 
         # ── Bibliographic info ────────────────────────────────────────────────
+        layout.addSpacing(4)
         layout.addWidget(_SectionLabel("書誌情報"))
 
         authors_str = "，".join(paper.author_list) if paper.author_list else "—"
@@ -182,6 +189,7 @@ class PaperDetailView(QWidget):
         # ── Classification ────────────────────────────────────────────────────
         has_class = any([paper.paper_type, paper.clinical_area, paper.approach, paper.tag_list])
         if has_class:
+            layout.addSpacing(4)
             layout.addWidget(_SectionLabel("分類・タグ"))
             if paper.paper_type:
                 self._add_kv(layout, "論文種別", paper.paper_type)
@@ -195,6 +203,7 @@ class PaperDetailView(QWidget):
 
         # ── Abstract ─────────────────────────────────────────────────────────
         if paper.abstract:
+            layout.addSpacing(4)
             layout.addWidget(_SectionLabel("抄録"))
             abstract_box = QTextEdit()
             abstract_box.setReadOnly(True)
@@ -209,6 +218,7 @@ class PaperDetailView(QWidget):
 
         # ── File ─────────────────────────────────────────────────────────────
         if paper.file_path:
+            layout.addSpacing(4)
             layout.addWidget(_SectionLabel("ファイル"))
             file_row = QHBoxLayout()
             file_label = QLabel(paper.file_path)
@@ -217,6 +227,11 @@ class PaperDetailView(QWidget):
             open_btn = QPushButton("開く")
             open_btn.setFixedHeight(24)
             open_btn.setFixedWidth(50)
+            open_btn.setStyleSheet(
+                "QPushButton { background: #f1f5f9; color: #374151; border: 1px solid #d1d5db;"
+                " border-radius: 4px; font-size: 12px; }"
+                "QPushButton:hover { background: #e2e8f0; }"
+            )
             open_btn.clicked.connect(lambda: self._open_file(paper.file_path))
             file_row.addWidget(file_label, 1)
             file_row.addWidget(open_btn)
@@ -224,6 +239,7 @@ class PaperDetailView(QWidget):
 
         # ── Additional notes ──────────────────────────────────────────────────
         if paper.additional_notes:
+            layout.addSpacing(4)
             layout.addWidget(_SectionLabel("メモ（補足）"))
             notes_box = QTextEdit()
             notes_box.setReadOnly(True)

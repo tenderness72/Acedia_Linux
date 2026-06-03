@@ -84,18 +84,6 @@ class MainWindow(QMainWindow):
         self._act_add.triggered.connect(self._on_add)
         tb.addAction(self._act_add)
 
-        self._act_edit = QAction("編集", self)
-        self._act_edit.setEnabled(False)
-        self._act_edit.triggered.connect(lambda: self._on_edit(self._current_paper))
-        tb.addAction(self._act_edit)
-
-        self._act_delete = QAction("削除", self)
-        self._act_delete.setEnabled(False)
-        self._act_delete.triggered.connect(lambda: self._on_delete(self._current_paper))
-        tb.addAction(self._act_delete)
-
-        tb.addSeparator()
-
         self._act_ris = QAction("RIS インポート", self)
         self._act_ris.triggered.connect(self._on_import_ris)
         tb.addAction(self._act_ris)
@@ -118,9 +106,7 @@ class MainWindow(QMainWindow):
         self._notes_view.set_paper(paper)
         self._citation_view.show_paper(paper)
 
-        has_paper = paper is not None
-        self._act_edit.setEnabled(has_paper)
-        self._act_delete.setEnabled(has_paper)
+        pass
 
     def _on_add(self):
         dlg = PaperEditDialog(parent=self)
