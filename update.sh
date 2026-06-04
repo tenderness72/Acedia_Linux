@@ -12,4 +12,12 @@ cp $SRC/acedia/services/paper_service.py $BASE/acedia/services/paper_service.py
 cp $SRC/acedia/services/ris_service.py $BASE/acedia/services/ris_service.py
 mkdir -p $BASE/acedia/resources
 cp $SRC/acedia/resources/icon.ico $BASE/acedia/resources/icon.ico
+cp $SRC/acedia/resources/icon.png $BASE/acedia/resources/icon.png
+
+# システムアイコンディレクトリにインストール
+mkdir -p /usr/share/icons/hicolor/128x128/apps
+cp $SRC/acedia/resources/icon.png /usr/share/icons/hicolor/128x128/apps/acedia.png
+gtk-update-icon-cache -f /usr/share/icons/hicolor/ 2>/dev/null || true
+update-desktop-database 2>/dev/null || true
+
 echo "完了"
